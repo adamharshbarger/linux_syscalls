@@ -1,5 +1,8 @@
 #![allow(non_snake_case)]
 
+pub mod types;
+pub mod util;
+
 //System Calls return a Result<>. OK will return the value returned by the sytem call except
 //in cases where the system call returns something more complex (ie Brk() returns an address)
 //In those cases I have hard-coded a return value of 1. Err is returning a genaric error string.
@@ -9,18 +12,11 @@
 //  Finishing writing System Call functions
 //  Verify correct selection of argument types
 //  Refactor and Extract reusable code into new modules
-
-pub fn Syscall_Return(result: i32) -> Result<i32, &'static str>
-{
-    if result == -1 {
-        return Err("There has been an error")
-    }
-    Ok(result)
-}
+//  Verify Return Logic & Types
 
 //#region READ System Call
-pub fn READ(fd: i32, buf: &[u8], count: usize) -> Result<i32, &'static str> {
-    let ret: i32;
+pub fn READ(fd: usize, buf: &[u8], count: usize) -> Result<isize, &'static str> {
+    let ret: isize;
     unsafe {
         asm!("syscall",
           in("rax") 0,
@@ -32,13 +28,13 @@ pub fn READ(fd: i32, buf: &[u8], count: usize) -> Result<i32, &'static str> {
           lateout("rax") ret,
         );
     }
-    Syscall_Return(ret)
+    util::Syscall_Return(ret)
 }
 //#endregion
 
 //#region WRITE System Call
-pub fn WRITE(fd: i32, buf: &[u8], count: usize) -> Result<i32, &'static str> {
-    let ret: i32;
+pub fn WRITE(fd: usize, buf: &[u8], count: usize) -> Result<isize, &'static str> {
+    let ret: isize;
     unsafe {
         asm!("syscall",
           in("rax") 1,
@@ -50,17 +46,45 @@ pub fn WRITE(fd: i32, buf: &[u8], count: usize) -> Result<i32, &'static str> {
           lateout("rax") ret,
         );
     }
-    Syscall_Return(ret)
+    util::Syscall_Return(ret)
 }
 //#endregion
 
 //#region OPEN System Call
-pub fn OPEN() {}
+pub fn OPEN(filename: &str, flags: usize, mode: usize) -> Result<isize, &'static str> {
+    let ret: isize;
+    if mode != 0
+    {
+        unsafe {
+            asm!("syscall",
+              in("rax") 2,
+              in("rdi") filename.as_ptr(),
+              in("rsi") flags,
+              in("rdx") mode,
+              out("rcx") _,
+              out("r11") _,
+              lateout("rax") ret,
+            );
+        }
+        return util::Syscall_Return(ret);
+    }
+    unsafe {
+        asm!("syscall",
+          in("rax") 1,
+          in("rdi") filename.as_ptr(),
+          in("rsi") flags,
+          out("rcx") _,
+          out("r11") _,
+          lateout("rax") ret,
+        );
+    }
+    util::Syscall_Return(ret)
+}
 //#endregion
 
 //#region CLOSE System Call
-pub fn CLOSE(fd: i32) -> Result<i32, &'static str> {
-    let ret: i32;
+pub fn CLOSE(fd: usize) -> Result<isize, &'static str> {
+    let ret: isize;
     unsafe {
         asm!("syscall",
           in("rax") 3,
@@ -70,16 +94,60 @@ pub fn CLOSE(fd: i32) -> Result<i32, &'static str> {
           lateout("rax") ret,
         );
     }
-    Syscall_Return(ret)
+    util::Syscall_Return(ret)
 }
 //#endregion
 
 //#region STAT System Call
-pub fn STAT() {}
+pub fn STAT(filename: &str, statbuf: &types::Stat ) -> Result<isize, &'static str> {
+    let ret: isize;
+    unsafe {
+        asm!("syscall",
+          in("rax") 4,
+          in("rdi") filename.as_ptr(),
+          in("rsi") statbuf as *const _,
+          out("rcx") _,
+          out("r11") _,
+          lateout("rax") ret,
+        );
+    }
+    util::Syscall_Return(ret)
+}
 //#endregion
 
-pub fn FSTAT() {}
-pub fn LSTAT() {}
+//#region FSTAT System Call
+pub fn FSTAT(fd: usize, statbuf: &types::Stat) -> Result<isize, &'static str> {
+    let ret: isize;
+    unsafe {
+        asm!("syscall",
+          in("rax") 5,
+          in("rdi") fd,
+          in("rsi") statbuf as *const _,
+          out("rcx") _,
+          out("r11") _,
+          lateout("rax") ret,
+        );
+    }
+    util::Syscall_Return(ret)
+}
+//#endregion
+
+//#region LSTAT System Call
+pub fn LSTAT(filename: &str, statbuf: &types::Stat ) -> Result<isize, &'static str> {
+    let ret: isize;
+    unsafe {
+        asm!("syscall",
+          in("rax") 6,
+          in("rdi") filename.as_ptr(),
+          in("rsi") statbuf as *const _,
+          out("rcx") _,
+          out("r11") _,
+          lateout("rax") ret,
+        );
+    }
+    util::Syscall_Return(ret)
+}
+//#endregion
 
 //#region POLL System Call
 pub fn POLL() {}
