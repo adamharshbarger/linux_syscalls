@@ -70,7 +70,7 @@ pub fn OPEN(filename: &str, flags: usize, mode: usize) -> Result<isize, &'static
     }
     unsafe {
         asm!("syscall",
-          in("rax") 1,
+          in("rax") 2,
           in("rdi") filename.as_ptr(),
           in("rsi") flags,
           out("rcx") _,
