@@ -1,0 +1,7 @@
+[package]
+
+name = "linux_syscalls"
+version = "0.0.1"
+description = "Linux X86_64 System Calls"
+readme = "README.md"
+
