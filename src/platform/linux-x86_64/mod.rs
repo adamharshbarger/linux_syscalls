@@ -14,7 +14,7 @@ pub mod util;
 //  Refactor and Extract reusable code into new modules
 //  Verify Return Logic & Types
 
-//#region READ System Call
+//#region READ System Call #0
 pub fn READ(fd: usize, buf: &[u8], count: usize) -> Result<isize, &'static str> {
     let ret: isize;
     unsafe {
@@ -32,7 +32,7 @@ pub fn READ(fd: usize, buf: &[u8], count: usize) -> Result<isize, &'static str> 
 }
 //#endregion
 
-//#region WRITE System Call
+//#region WRITE System Call #1
 pub fn WRITE(fd: usize, buf: &[u8], count: usize) -> Result<isize, &'static str> {
     let ret: isize;
     unsafe {
@@ -50,7 +50,7 @@ pub fn WRITE(fd: usize, buf: &[u8], count: usize) -> Result<isize, &'static str>
 }
 //#endregion
 
-//#region OPEN System Call
+//#region OPEN System Call #2
 pub fn OPEN(filename: &str, flags: usize, mode: usize) -> Result<isize, &'static str> {
     let ret: isize;
     if mode != 0
@@ -82,7 +82,7 @@ pub fn OPEN(filename: &str, flags: usize, mode: usize) -> Result<isize, &'static
 }
 //#endregion
 
-//#region CLOSE System Call
+//#region CLOSE System Call #3
 pub fn CLOSE(fd: usize) -> Result<isize, &'static str> {
     let ret: isize;
     unsafe {
@@ -98,8 +98,8 @@ pub fn CLOSE(fd: usize) -> Result<isize, &'static str> {
 }
 //#endregion
 
-//#region STAT System Call
-pub fn STAT(filename: &str, statbuf: &types::Stat ) -> Result<isize, &'static str> {
+//#region STAT System Call #4
+pub fn STAT(filename: &str, statbuf: &types::stat ) -> Result<isize, &'static str> {
     let ret: isize;
     unsafe {
         asm!("syscall",
@@ -115,8 +115,8 @@ pub fn STAT(filename: &str, statbuf: &types::Stat ) -> Result<isize, &'static st
 }
 //#endregion
 
-//#region FSTAT System Call
-pub fn FSTAT(fd: usize, statbuf: &types::Stat) -> Result<isize, &'static str> {
+//#region FSTAT System Call #5
+pub fn FSTAT(fd: usize, statbuf: &types::stat) -> Result<isize, &'static str> {
     let ret: isize;
     unsafe {
         asm!("syscall",
@@ -132,8 +132,8 @@ pub fn FSTAT(fd: usize, statbuf: &types::Stat) -> Result<isize, &'static str> {
 }
 //#endregion
 
-//#region LSTAT System Call
-pub fn LSTAT(filename: &str, statbuf: &types::Stat ) -> Result<isize, &'static str> {
+//#region LSTAT System Call #6
+pub fn LSTAT(filename: &str, statbuf: &types::stat ) -> Result<isize, &'static str> {
     let ret: isize;
     unsafe {
         asm!("syscall",
@@ -149,16 +149,99 @@ pub fn LSTAT(filename: &str, statbuf: &types::Stat ) -> Result<isize, &'static s
 }
 //#endregion
 
-//#region POLL System Call
-pub fn POLL() {}
+//#region POLL System Call #7
+pub fn POLL(ufds: &types::poll_fd, nfds: usize, timeout_msecs: usize) -> Result<isize, &'static str> {
+    let ret: isize;
+    unsafe {
+        asm!("syscall",
+          in("rax") 7,
+          in("rdi") ufds as *const _,
+          in("rsi") nfds,
+          in("rdx") timeout_msecs,
+          out("rcx") _,
+          out("r11") _,
+          lateout("rax") ret,
+        );
+    }
+    return util::Syscall_Return(ret);
+}
 //#endregion
 
-pub fn LSEEK() {}
-pub fn MMAP() {}
-pub fn MPROTECT() {}
-pub fn MUNMAP() {}
+//#region LSEEK System Call #8
+pub fn LSEEK(fd: usize, offset: types::off_t, origin: usize) -> Result<isize, &'static str> {
+    let ret: isize;
+    unsafe {
+        asm!("syscall",
+          in("rax") 8,
+          in("rdi") fd,
+          in("rsi") offset,
+          in("rdx") origin,
+          out("rcx") _,
+          out("r11") _,
+          lateout("rax") ret,
+        );
+    }
+    return util::Syscall_Return(ret);
+}
+//#endregion
 
-//#region BRK System Call
+//#region MMAP System Call #9
+pub fn MMAP(addr: usize, len: usize, prot: usize, flags: usize, fd: usize, off: usize) -> Result<isize, &'static str> {
+    let ret: isize;
+    unsafe {
+        asm!("syscall",
+          in("rax") 9,
+          in("rdi") addr,
+          in("rsi") len,
+          in("rdx") prot,
+          in("r10") flags,
+          in("r8") fd,
+          in("r9") off,
+          out("rcx") _,
+          out("r11") _,
+          lateout("rax") ret,
+        );
+    }
+    return util::Syscall_Return(ret);
+}
+//#endregion
+
+//#region MPROTECT System Call #10
+pub fn MPROTECT(start: usize, len: usize, prot: usize) -> Result<isize, &'static str> {
+    let ret: isize;
+    unsafe {
+        asm!("syscall",
+          in("rax") 10,
+          in("rdi") start,
+          in("rsi") len,
+          in("rdx") prot,
+          out("rcx") _,
+          out("r11") _,
+          lateout("rax") ret,
+        );
+    }
+    return util::Syscall_Return(ret);
+}
+//#endregion
+
+//#region MUNMAP System Call #11
+pub fn MUNMAP(addr: usize, len: usize) -> Result<isize, &'static str> {
+    let ret: isize;
+    unsafe {
+        asm!("syscall",
+          in("rax") 11,
+          in("rdi") addr,
+          in("rsi") len,
+          out("rcx") _,
+          out("r11") _,
+          lateout("rax") ret,
+        );
+    }
+    return util::Syscall_Return(ret);
+}
+//#endregion
+
+//#region BRK System Call #12
 pub fn BRK(end_data_segment: *const usize) -> Result<i32, &'static str>{
     let ret: *const usize;
     unsafe {
@@ -177,7 +260,10 @@ pub fn BRK(end_data_segment: *const usize) -> Result<i32, &'static str>{
 }
 //#endregion
 
+//#region RT_SIGACTION System Call #13
 pub fn RT_SIGACTION() {}
+//#endregion
+
 pub fn RT_SIGPROCMASK() {}
 pub fn RT_SIGRETURN() {}
 pub fn IOCTL() {}
