@@ -5,7 +5,7 @@ use linux_syscalls::platform::*;
 fn main() 
 {
     //Example using WRITE System Call
-    let string = "Hello World!\n";
+    let string = "I'm calling the WRITE System Call\n";
 
     match WRITE(1, string.as_bytes(), string.len())
     {
