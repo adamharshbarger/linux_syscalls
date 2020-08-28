@@ -1,5 +1,5 @@
 pub fn Syscall_Return(result: isize) -> Result<isize, &'static str>
-{
+{   
     if result < 0 && result > -4096{
         let err: usize = result.checked_neg().unwrap() as usize;
         return Err(Get_Err_Code(err));
