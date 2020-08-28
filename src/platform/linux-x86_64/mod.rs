@@ -1,7 +1,7 @@
-#![allow(non_snake_case)]
 
-pub mod types;
-pub mod util;
+pub(super) mod syscall;
+pub(super) mod types;
+pub(super) mod util;
 
 //System Calls return a Result<>. OK will return the value returned by the sytem call except
 //in cases where the system call returns something more complex (ie Brk() returns an address)
@@ -16,247 +16,123 @@ pub mod util;
 
 //#region READ System Call #0
 pub fn READ(fd: usize, buf: &[u8], count: usize) -> Result<isize, &'static str> {
-    let ret: isize;
-    unsafe {
-        asm!("syscall",
-          in("rax") 0,
-          in("rdi") fd,
-          in("rsi") buf.as_ptr(),
-          in("rdx") count,
-          out("rcx") _,
-          out("r11") _,
-          lateout("rax") ret,
-        );
-    }
-    util::Syscall_Return(ret)
+    return util::Syscall_Return(syscall!(0, fd, buf.as_ptr(), count));
 }
 //#endregion
 
 //#region WRITE System Call #1
 pub fn WRITE(fd: usize, buf: &[u8], count: usize) -> Result<isize, &'static str> {
-    let ret: isize;
-    unsafe {
-        asm!("syscall",
-          in("rax") 1,
-          in("rdi") fd,
-          in("rsi") buf.as_ptr(),
-          in("rdx") count,
-          out("rcx") _,
-          out("r11") _,
-          lateout("rax") ret,
-        );
-    }
-    util::Syscall_Return(ret)
+    return util::Syscall_Return(syscall!(1, fd, buf.as_ptr(), count));
 }
 //#endregion
 
 //#region OPEN System Call #2
 pub fn OPEN(filename: &str, flags: usize, mode: usize) -> Result<isize, &'static str> {
-    let ret: isize;
     if mode != 0
     {
-        unsafe {
-            asm!("syscall",
-              in("rax") 2,
-              in("rdi") filename.as_ptr(),
-              in("rsi") flags,
-              in("rdx") mode,
-              out("rcx") _,
-              out("r11") _,
-              lateout("rax") ret,
-            );
-        }
-        return util::Syscall_Return(ret);
+        return util::Syscall_Return(syscall!(2, filename.as_ptr(), flags, mode));
     }
-    unsafe {
-        asm!("syscall",
-          in("rax") 2,
-          in("rdi") filename.as_ptr(),
-          in("rsi") flags,
-          out("rcx") _,
-          out("r11") _,
-          lateout("rax") ret,
-        );
-    }
-    util::Syscall_Return(ret)
+    return util::Syscall_Return(syscall!(2, filename.as_ptr(), flags));
 }
 //#endregion
 
 //#region CLOSE System Call #3
-pub fn CLOSE(fd: usize) -> Result<isize, &'static str> {
-    let ret: isize;
-    unsafe {
-        asm!("syscall",
-          in("rax") 3,
-          in("rdi") fd,
-          out("rcx") _,
-          out("r11") _,
-          lateout("rax") ret,
-        );
+pub fn CLOSE(fd: usize) -> Result<usize, &'static str> {
+    if syscall!(3, fd) == -1
+    {
+        return Err("There was an error");
     }
-    util::Syscall_Return(ret)
+    return Ok(1)
 }
 //#endregion
 
 //#region STAT System Call #4
-pub fn STAT(filename: &str, statbuf: &types::stat ) -> Result<isize, &'static str> {
-    let ret: isize;
-    unsafe {
-        asm!("syscall",
-          in("rax") 4,
-          in("rdi") filename.as_ptr(),
-          in("rsi") statbuf as *const _,
-          out("rcx") _,
-          out("r11") _,
-          lateout("rax") ret,
-        );
+pub fn STAT(filename: &str, statbuf: &types::stat ) -> Result<usize, &'static str> {
+    if syscall!(4, filename.as_ptr(), statbuf as *const _) == -1
+    {
+        return Err("There was an error");
     }
-    util::Syscall_Return(ret)
+    return Ok(1)
 }
 //#endregion
 
 //#region FSTAT System Call #5
-pub fn FSTAT(fd: usize, statbuf: &types::stat) -> Result<isize, &'static str> {
-    let ret: isize;
-    unsafe {
-        asm!("syscall",
-          in("rax") 5,
-          in("rdi") fd,
-          in("rsi") statbuf as *const _,
-          out("rcx") _,
-          out("r11") _,
-          lateout("rax") ret,
-        );
+pub fn FSTAT(fd: usize, statbuf: &types::stat) -> Result<usize, &'static str> {
+    if syscall!(5, fd, statbuf as *const _) == -1
+    {
+        return Err("There was an error");
     }
-    util::Syscall_Return(ret)
+    return Ok(1)
 }
 //#endregion
 
 //#region LSTAT System Call #6
-pub fn LSTAT(filename: &str, statbuf: &types::stat ) -> Result<isize, &'static str> {
-    let ret: isize;
-    unsafe {
-        asm!("syscall",
-          in("rax") 6,
-          in("rdi") filename.as_ptr(),
-          in("rsi") statbuf as *const _,
-          out("rcx") _,
-          out("r11") _,
-          lateout("rax") ret,
-        );
+pub fn LSTAT(filename: &str, statbuf: &types::stat ) -> Result<usize, &'static str> {
+    if syscall!(6, filename.as_ptr(), statbuf as *const _) == -1
+    {
+        return Err("There was an error");
     }
-    util::Syscall_Return(ret)
+    return Ok(1)
 }
 //#endregion
 
 //#region POLL System Call #7
-pub fn POLL(ufds: &types::poll_fd, nfds: usize, timeout_msecs: usize) -> Result<isize, &'static str> {
-    let ret: isize;
-    unsafe {
-        asm!("syscall",
-          in("rax") 7,
-          in("rdi") ufds as *const _,
-          in("rsi") nfds,
-          in("rdx") timeout_msecs,
-          out("rcx") _,
-          out("r11") _,
-          lateout("rax") ret,
-        );
+pub fn POLL(ufds: &types::poll_fd, nfds: usize, timeout_msecs: usize) -> Result<usize, &'static str> {
+    if syscall!(7, ufds as *const _, nfds, timeout_msecs) == -1
+    {
+        return Err("There was an error");
     }
-    return util::Syscall_Return(ret);
+    return Ok(1)
 }
 //#endregion
 
 //#region LSEEK System Call #8
-pub fn LSEEK(fd: usize, offset: types::off_t, origin: usize) -> Result<isize, &'static str> {
-    let ret: isize;
-    unsafe {
-        asm!("syscall",
-          in("rax") 8,
-          in("rdi") fd,
-          in("rsi") offset,
-          in("rdx") origin,
-          out("rcx") _,
-          out("r11") _,
-          lateout("rax") ret,
-        );
+pub fn LSEEK(fd: usize, offset: &types::off_t, origin: usize) -> Result<usize, &'static str> {
+    if syscall!(8, fd, offset as *const _, origin) == -1
+    {
+        return Err("There was an error");
     }
-    return util::Syscall_Return(ret);
+    return Ok(1)
 }
 //#endregion
 
 //#region MMAP System Call #9
-pub fn MMAP(addr: usize, len: usize, prot: usize, flags: usize, fd: usize, off: usize) -> Result<isize, &'static str> {
-    let ret: isize;
-    unsafe {
-        asm!("syscall",
-          in("rax") 9,
-          in("rdi") addr,
-          in("rsi") len,
-          in("rdx") prot,
-          in("r10") flags,
-          in("r8") fd,
-          in("r9") off,
-          out("rcx") _,
-          out("r11") _,
-          lateout("rax") ret,
-        );
+pub fn MMAP(addr: usize, len: usize, prot: usize, flags: usize, fd: usize, off: usize) -> Result<usize, &'static str> {
+    if syscall!(9, addr, len, prot, flags, fd, off) == -1
+    {
+        return Err("There was an error");
     }
-    return util::Syscall_Return(ret);
+    return Ok(1)
 }
 //#endregion
 
 //#region MPROTECT System Call #10
-pub fn MPROTECT(start: usize, len: usize, prot: usize) -> Result<isize, &'static str> {
-    let ret: isize;
-    unsafe {
-        asm!("syscall",
-          in("rax") 10,
-          in("rdi") start,
-          in("rsi") len,
-          in("rdx") prot,
-          out("rcx") _,
-          out("r11") _,
-          lateout("rax") ret,
-        );
+pub fn MPROTECT(start: usize, len: usize, prot: usize) -> Result<usize, &'static str> {
+    if syscall!(10, start, len, prot) == -1
+    {
+        return Err("There was an error");
     }
-    return util::Syscall_Return(ret);
+    return Ok(1)
 }
 //#endregion
 
 //#region MUNMAP System Call #11
-pub fn MUNMAP(addr: usize, len: usize) -> Result<isize, &'static str> {
-    let ret: isize;
-    unsafe {
-        asm!("syscall",
-          in("rax") 11,
-          in("rdi") addr,
-          in("rsi") len,
-          out("rcx") _,
-          out("r11") _,
-          lateout("rax") ret,
-        );
+pub fn MUNMAP(addr: usize, len: usize) -> Result<usize, &'static str> {
+    if syscall!(11, addr, len) == -1
+    {
+        return Err("There was an error");
     }
-    return util::Syscall_Return(ret);
+    return Ok(1)
 }
 //#endregion
 
 //#region BRK System Call #12
-pub fn BRK(end_data_segment: *const usize) -> Result<i32, &'static str>{
-    let ret: *const usize;
-    unsafe {
-        asm!("syscall",
-          in("rax") 12,
-          in("rdi") end_data_segment,
-          out("rcx") _,
-          out("r11") _,
-          lateout("rax") ret,
-        );
+pub fn BRK(end_data_segment: *const usize) -> Result<usize, &'static str>{
+    if syscall!(12, end_data_segment) == -1
+    {
+        return Err("There was an error");
     }
-    if ret == end_data_segment {
-        return Err("There has been an error");
-    }
-    Ok(1)
+    return Ok(1)
 }
 //#endregion
 

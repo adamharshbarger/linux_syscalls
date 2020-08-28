@@ -1,6 +1,3 @@
-#![allow(non_camel_case_types)]
-#![allow(dead_code)]
-
 //TODO:
 //  Finish Building-out Structures
 //  Verify and update Type definitions
