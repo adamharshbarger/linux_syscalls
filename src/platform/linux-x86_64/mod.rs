@@ -15,13 +15,13 @@ pub(super) mod syscall;
 
 //#region READ System Call #0
 pub fn READ(fd: usize, buf: &[u8], count: usize) -> Result<isize, &'static str> {
-    syscall!(0, fd, buf.as_ptr(), count)
+    return syscall!(0, fd, buf.as_ptr(), count)
 }
 //#endregion
 
 //#region WRITE System Call #1
 pub fn WRITE(fd: usize, buf: &[u8], count: usize) -> Result<isize, &'static str> {
-    syscall!(1, fd, buf.as_ptr(), count)
+    return syscall!(1, fd, buf.as_ptr(), count)
 }
 //#endregion
 
