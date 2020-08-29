@@ -17,7 +17,7 @@ pub type c_ulong_long = u64;
 pub type c_size_t = usize;
 pub type c_float = f32;
 pub type c_double = f64;
-// long double is not supported in rust since removal of f128 
+// pub type c_long_double = f128; <---f128 has been deprecated in Rust 
 pub type c_bool	= bool;
 pub type c_void	= ();
 
