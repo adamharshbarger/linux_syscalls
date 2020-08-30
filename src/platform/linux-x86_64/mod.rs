@@ -14,81 +14,81 @@ pub(super) mod syscall;
 //  Verify Return Logic & Types
 
 //#region READ System Call #0
-pub fn READ(fd: usize, buf: &[u8], count: usize) -> Result<isize, &'static str> {
+pub fn READ(fd: usize, buf: &[u8], count: usize) -> Result<isize, usize> {
     syscall!(0, fd, buf.as_ptr(), count)
 }
 //#endregion
 
 //#region WRITE System Call #1
-pub fn WRITE(fd: usize, buf: &[u8], count: usize) -> Result<isize, &'static str> {
+pub fn WRITE(fd: usize, buf: &[u8], count: usize) -> Result<isize, usize> {
     syscall!(1, fd, buf.as_ptr(), count)
 }
 //#endregion
 
 //#region OPEN System Call #2
-pub fn OPEN(filename: &str, flags: usize, mode: usize) -> Result<isize, &'static str> {                 //<-Make sure this will work
+pub fn OPEN(filename: &str, flags: usize, mode: usize) -> Result<isize, usize> {                 //<-Make sure this will work
     //Per man pages, flags and mode are optional. Set param to 0 when unused.
     return syscall!(2, filename.as_ptr(), flags, mode);
 }
 //#endregion
 
 //#region CLOSE System Call #3
-pub fn CLOSE(fd: usize) -> Result<isize, &'static str> {
+pub fn CLOSE(fd: usize) -> Result<isize, usize> {
     return syscall!(3, fd);
 }
 //#endregion
 
 //#region STAT System Call #4
-pub fn STAT(filename: &str, statbuf: &types::stat ) -> Result<isize, &'static str> {
+pub fn STAT(filename: &str, statbuf: &types::stat ) -> Result<isize, usize> {
     return syscall!(4, filename.as_ptr(), statbuf as *const _);
 }
 //#endregion
 
 //#region FSTAT System Call #5
-pub fn FSTAT(fd: usize, statbuf: &types::stat) -> Result<isize, &'static str> {
+pub fn FSTAT(fd: usize, statbuf: &types::stat) -> Result<isize, usize> {
     return syscall!(5, fd, statbuf as *const _);
 }
 //#endregion
 
 //#region LSTAT System Call #6
-pub fn LSTAT(filename: &str, statbuf: &types::stat ) -> Result<isize, &'static str> {
+pub fn LSTAT(filename: &str, statbuf: &types::stat ) -> Result<isize, usize> {
     return syscall!(6, filename.as_ptr(), statbuf as *const _);
 }
 //#endregion
 
 //#region POLL System Call #7
-pub fn POLL(ufds: &types::poll_fd, nfds: usize, timeout_msecs: usize) -> Result<isize, &'static str> {
+pub fn POLL(ufds: &types::poll_fd, nfds: usize, timeout_msecs: usize) -> Result<isize, usize> {
     return syscall!(7, ufds as *const _, nfds, timeout_msecs);
 }
 //#endregion
 
 //#region LSEEK System Call #8
-pub fn LSEEK(fd: usize, offset: &types::off_t, origin: usize) -> Result<isize, &'static str> {
+pub fn LSEEK(fd: usize, offset: &types::off_t, origin: usize) -> Result<isize, usize> {
     return syscall!(8, fd, offset as *const _, origin);
 }
 //#endregion
 
 //#region MMAP System Call #9
-pub fn MMAP(addr: usize, len: usize, prot: usize, flags: usize, fd: usize, off: usize) -> Result<isize, &'static str> {
+pub fn MMAP(addr: usize, len: usize, prot: usize, flags: usize, fd: usize, off: usize) -> Result<isize, usize> {
     return syscall!(9, addr, len, prot, flags, fd, off);
 }
 //#endregion
 
 //#region MPROTECT System Call #10
-pub fn MPROTECT(start: usize, len: usize, prot: usize) -> Result<isize, &'static str> {
+pub fn MPROTECT(start: usize, len: usize, prot: usize) -> Result<isize, usize> {
     return syscall!(10, start, len, prot);
 }
 //#endregion
 
 //#region MUNMAP System Call #11
-pub fn MUNMAP(addr: usize, len: usize) -> Result<isize, &'static str> {
+pub fn MUNMAP(addr: usize, len: usize) -> Result<isize, usize> {
     return syscall!(11, addr, len);
 }
 //#endregion
 
 //#region BRK System Call #12
 // Not sure if the end_data_segment is passed correct   
-pub fn BRK(end_data_segment: &usize) -> Result<isize, &'static str>{            //<-Check on this***********
+pub fn BRK(end_data_segment: &usize) -> Result<isize, usize>{            //<-Check on this***********
     return syscall!(12, end_data_segment as *const _);
 }
 //#endregion
