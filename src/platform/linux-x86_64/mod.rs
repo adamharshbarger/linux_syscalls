@@ -2,15 +2,14 @@ use crate::types;
 
 pub(super) mod syscall;
 
-//System Calls return a Result<>. OK will return the value returned by the sytem call except
-//in cases where the system call returns something more complex (ie Brk() returns an address)
-//In those cases I have hard-coded a return value of 1. Err is returning a genaric error string.
-//It will be up to the user to probe errno for further details on the error type._SYSCTL()
+//Syscall Functions return Result<>. Ok() returns the result from the actual ASM!(rax register). 
+//In most cases this will be 0 or 1. But soem (I.E. BRK() will return an address). Err() will
+//return a string description of the Error. 
 
 //ToDo: 
 //  Finishing writing System Call functions
 //  Verify correct selection of argument types
-//  Refactor and Extract reusable code into new modules
+//  Refactor and Extract reusable code into new modules 
 //  Verify Return Logic & Types
 
 //#region READ System Call #0
