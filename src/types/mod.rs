@@ -1,8 +1,6 @@
 //TODO:
 //  Finish Building-out Structures
 //  Verify and update Type definitions
-//  Look for best way to expose types for user created functions
-
 
 //C Type Conversions for general use
 pub type c_char = i8;
@@ -75,28 +73,32 @@ pub struct poll_fd {
 }     
 
 //Parameter for the RT_SIGACTION System Call
-pub struct sigaction {}     //Define & Verify
+pub struct sigaction {}     					//Define & Verify
 
 //Parameter for the READV, WRITEV System Calls
-pub struct iovec {}         //Define & Verify
+pub struct iovec {}         					//Define & Verify
 
 //Parameter for the SELECT System Call
-pub struct timeval {}       //Define & Verify
+pub struct timeval {}       					//Define & Verify
 
+//Error object returned from syscall#
 pub struct error {
     pub errno: isize,
     pub err_msg: &'static str,
 }
 
 impl error {
+	//Build error object 
     pub fn new(errno: isize) -> error {
         error {
+			//This will benegative
             errno: errno,
             err_msg: error::get_err_code(errno),
         }
-    }
-    fn get_err_code(errno: isize) -> &'static str {
-        let err_code: [&str; 132] = [
+	}
+	//Get the Human Readable Error Message
+	fn get_err_code(errno: isize) -> &'static str {					//<--Should I seperate Error Code from Description
+        let err_code: [&str; 132] = [								//    and add seperate field to struct for code????
             "EPERM - Operation not permitted",
             "ENOENT - No such file or directory",
             "ESRCH - No such process",
@@ -229,8 +231,11 @@ impl error {
             "OWNERDEAD - Owner died",
             "ENOTRECOVERABLE - State not recoverable",
             "ERFKILL - Operation not possible due to RF-kill",
-        ];
-        let index: usize = errno.checked_neg().unwrap() as usize;
+		];
+		//Invert sign of errno for array usage
+		let index: usize = errno.checked_neg().unwrap() as usize;
+
+		//Must decrease by 1 for 0 based indexing
         return err_code[index - 1];
     }
 }
