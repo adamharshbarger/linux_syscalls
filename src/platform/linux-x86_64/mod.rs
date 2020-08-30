@@ -56,8 +56,8 @@ pub fn LSTAT(filename: &str, statbuf: &types::stat ) -> Result<isize, types::err
 //#endregion
 
 //#region POLL System Call #7
-pub fn POLL(ufds: &types::poll_fd, nfds: usize, timeout_msecs: usize) -> Result<isize, types::error> {
-    return syscall!(7, ufds as *const _, nfds, timeout_msecs);
+pub fn POLL(ufds: &[types::poll_fd], nfds: usize, timeout_msecs: usize) -> Result<isize, types::error> {
+    return syscall!(7, ufds.as_ptr(), nfds, timeout_msecs);
 }
 //#endregion
 
