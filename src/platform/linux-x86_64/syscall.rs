@@ -1,9 +1,10 @@
 //Linux-X86_64 ABI
 
-//All of the syscall function utilize the new ASM! syntax
+use types;
+
 //These functions are hidden to the user
 #[inline(always)]
-pub(crate) unsafe fn syscall0(n: usize) -> Result<isize, usize> {
+pub(crate) unsafe fn syscall0(n: usize) -> Result<isize, types::error> {
     let ret: isize;
     asm!("syscall",
       in("rax") n,
@@ -11,15 +12,16 @@ pub(crate) unsafe fn syscall0(n: usize) -> Result<isize, usize> {
       out("r11") _,
       lateout("rax") ret,
     );
+    //Check if Return is an error
     if ret < 0 && ret > -4096 {
-        let errno: usize = ret.checked_neg().unwrap() as usize;
-        return Err(errno);
+      //Build an error Message
+      return Err(types::error::new(ret));
     }
     Ok(ret)
 }
 
 #[inline(always)]
-pub(crate) unsafe fn syscall1(n: usize, a1: usize) -> Result<isize, usize> {
+pub(crate) unsafe fn syscall1(n: usize, a1: usize) -> Result<isize, types::error> {
     let ret: isize;
     asm!("syscall",
       in("rax") n,
@@ -29,14 +31,13 @@ pub(crate) unsafe fn syscall1(n: usize, a1: usize) -> Result<isize, usize> {
       lateout("rax") ret,
     );
     if ret < 0 && ret > -4096 {
-        let errno: usize = ret.checked_neg().unwrap() as usize;
-        return Err(errno);
+        return Err(types::error::new(ret));
     }
     Ok(ret)
 }
 
 #[inline(always)]
-pub(crate) unsafe fn syscall2(n: usize, a1: usize, a2: usize) -> Result<isize, usize> {
+pub(crate) unsafe fn syscall2(n: usize, a1: usize, a2: usize) -> Result<isize, types::error> {
     let ret: isize;
     asm!("syscall",
       in("rax") n,
@@ -47,14 +48,13 @@ pub(crate) unsafe fn syscall2(n: usize, a1: usize, a2: usize) -> Result<isize, u
       lateout("rax") ret,
     );
     if ret < 0 && ret > -4096 {
-        let errno: usize = ret.checked_neg().unwrap() as usize;
-        return Err(errno);
+        return Err(types::error::new(ret));
     }
     Ok(ret)
 }
 
 #[inline(always)]
-pub(crate) unsafe fn syscall3(n: usize, a1: usize, a2: usize, a3: usize) -> Result<isize, usize> {
+pub(crate) unsafe fn syscall3(n: usize, a1: usize, a2: usize, a3: usize) -> Result<isize, types::error> {
     let ret: isize;
     asm!("syscall",
       in("rax") n,
@@ -66,14 +66,13 @@ pub(crate) unsafe fn syscall3(n: usize, a1: usize, a2: usize, a3: usize) -> Resu
       lateout("rax") ret,
     );
     if ret < 0 && ret > -4096 {
-        let errno: usize = ret.checked_neg().unwrap() as usize;
-        return Err(errno);
+        return Err(types::error::new(ret));
     }
     Ok(ret)
 }
 
 #[inline(always)]
-pub(crate) unsafe fn syscall4(n: usize, a1: usize, a2: usize, a3: usize, a4: usize) -> Result<isize, usize> {
+pub(crate) unsafe fn syscall4(n: usize, a1: usize, a2: usize, a3: usize, a4: usize) -> Result<isize, types::error> {
     let ret: isize;
     asm!("syscall",
       in("rax") n,
@@ -86,14 +85,13 @@ pub(crate) unsafe fn syscall4(n: usize, a1: usize, a2: usize, a3: usize, a4: usi
       lateout("rax") ret,
     );
     if ret < 0 && ret > -4096 {
-        let errno: usize = ret.checked_neg().unwrap() as usize;
-        return Err(errno);
+        return Err(types::error::new(ret));
     }
     Ok(ret)
 }
 
 #[inline(always)]
-pub(crate) unsafe fn syscall5(n: usize, a1: usize, a2: usize, a3: usize, a4: usize, a5: usize) -> Result<isize, usize> {
+pub(crate) unsafe fn syscall5(n: usize, a1: usize, a2: usize, a3: usize, a4: usize, a5: usize) -> Result<isize, types::error> {
     let ret: isize;
     asm!("syscall",
       in("rax") n,
@@ -107,14 +105,13 @@ pub(crate) unsafe fn syscall5(n: usize, a1: usize, a2: usize, a3: usize, a4: usi
       lateout("rax") ret,
     );
     if ret < 0 && ret > -4096 {
-        let errno: usize = ret.checked_neg().unwrap() as usize;
-        return Err(errno);
+        return Err(types::error::new(ret));
     }
     Ok(ret)
 }
 
 #[inline(always)]
-pub(crate) unsafe fn syscall6(n: usize, a1: usize, a2: usize, a3: usize, a4: usize, a5: usize, a6: usize) -> Result<isize, usize> {
+pub(crate) unsafe fn syscall6(n: usize, a1: usize, a2: usize, a3: usize, a4: usize, a5: usize, a6: usize) -> Result<isize, types::error> {
     let ret: isize;
     asm!("syscall",
       in("rax") n,
@@ -129,8 +126,7 @@ pub(crate) unsafe fn syscall6(n: usize, a1: usize, a2: usize, a3: usize, a4: usi
       lateout("rax") ret,
     );
     if ret < 0 && ret > -4096 {
-        let errno: usize = ret.checked_neg().unwrap() as usize;
-        return Err(errno);
+        return Err(types::error::new(ret));
     }
     Ok(ret)
 }
