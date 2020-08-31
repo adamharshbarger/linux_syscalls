@@ -14,8 +14,8 @@ pub(crate) unsafe fn syscall0(n: usize) -> Result<isize, types::error> {
     );
     //Check if Return is an error
     if ret < 0 && ret > -4096 {
-      //Build an error Message
-      return Err(types::error::new(ret));
+        //Build an error Message
+        return Err(types::error::new(ret));
     }
     Ok(ret)
 }
@@ -54,7 +54,12 @@ pub(crate) unsafe fn syscall2(n: usize, a1: usize, a2: usize) -> Result<isize, t
 }
 
 #[inline(always)]
-pub(crate) unsafe fn syscall3(n: usize, a1: usize, a2: usize, a3: usize) -> Result<isize, types::error> {
+pub(crate) unsafe fn syscall3(
+    n: usize,
+    a1: usize,
+    a2: usize,
+    a3: usize,
+) -> Result<isize, types::error> {
     let ret: isize;
     asm!("syscall",
       in("rax") n,
@@ -72,7 +77,13 @@ pub(crate) unsafe fn syscall3(n: usize, a1: usize, a2: usize, a3: usize) -> Resu
 }
 
 #[inline(always)]
-pub(crate) unsafe fn syscall4(n: usize, a1: usize, a2: usize, a3: usize, a4: usize) -> Result<isize, types::error> {
+pub(crate) unsafe fn syscall4(
+    n: usize,
+    a1: usize,
+    a2: usize,
+    a3: usize,
+    a4: usize,
+) -> Result<isize, types::error> {
     let ret: isize;
     asm!("syscall",
       in("rax") n,
@@ -91,7 +102,14 @@ pub(crate) unsafe fn syscall4(n: usize, a1: usize, a2: usize, a3: usize, a4: usi
 }
 
 #[inline(always)]
-pub(crate) unsafe fn syscall5(n: usize, a1: usize, a2: usize, a3: usize, a4: usize, a5: usize) -> Result<isize, types::error> {
+pub(crate) unsafe fn syscall5(
+    n: usize,
+    a1: usize,
+    a2: usize,
+    a3: usize,
+    a4: usize,
+    a5: usize,
+) -> Result<isize, types::error> {
     let ret: isize;
     asm!("syscall",
       in("rax") n,
@@ -111,7 +129,15 @@ pub(crate) unsafe fn syscall5(n: usize, a1: usize, a2: usize, a3: usize, a4: usi
 }
 
 #[inline(always)]
-pub(crate) unsafe fn syscall6(n: usize, a1: usize, a2: usize, a3: usize, a4: usize, a5: usize, a6: usize) -> Result<isize, types::error> {
+pub(crate) unsafe fn syscall6(
+    n: usize,
+    a1: usize,
+    a2: usize,
+    a3: usize,
+    a4: usize,
+    a5: usize,
+    a6: usize,
+) -> Result<isize, types::error> {
     let ret: isize;
     asm!("syscall",
       in("rax") n,
@@ -130,5 +156,3 @@ pub(crate) unsafe fn syscall6(n: usize, a1: usize, a2: usize, a3: usize, a4: usi
     }
     Ok(ret)
 }
-
-

@@ -2,30 +2,31 @@ use crate::types;
 
 pub(super) mod syscall;
 
-//Syscall Functions return Result<>. Ok() returns the result from the actual ASM!(rax register). 
+//Syscall Functions return Result<>. Ok() returns the result from the actual ASM!(rax register).
 //In most cases this will be 0 or 1. But soem (I.E. BRK() will return an address). Err() will
-//return a string description of the error. 
+//return a string description of the error.
 
-//ToDo: 
+//ToDo:
 //  Finishing writing System Call functions
 //  Verify correct selection of argument types
-//  Refactor and Extract reusable code into new modules 
+//  Refactor and Extract reusable code into new modules
 //  Verify Return Logic & Types
 
 //#region READ System Call #0
 pub fn READ(fd: usize, buf: &[u8], count: usize) -> Result<isize, types::error> {
-    return syscall!(0, fd, buf.as_ptr(), count); 
+    return syscall!(0, fd, buf.as_ptr(), count);
 }
 //#endregion
 
 //#region WRITE System Call #1error
 pub fn WRITE(fd: usize, buf: &[u8], count: usize) -> Result<isize, types::error> {
-    return syscall!(1, fd, buf.as_ptr(), count)
+    return syscall!(1, fd, buf.as_ptr(), count);
 }
 //#endregion
 
 //#region OPEN System Call #2
-pub fn OPEN(filename: &str, flags: usize, mode: usize) -> Result<isize, types::error> {                 //<-Make sure this will work
+pub fn OPEN(filename: &str, flags: usize, mode: usize) -> Result<isize, types::error> {
+    //<-Make sure this will work
     //Per man pages, flags and mode are optional. Set param to 0 when unused.
     return syscall!(2, filename.as_ptr(), flags, mode);
 }
@@ -38,7 +39,7 @@ pub fn CLOSE(fd: usize) -> Result<isize, types::error> {
 //#endregion
 
 //#region STAT System Call #4
-pub fn STAT(filename: &str, statbuf: &types::stat ) -> Result<isize, types::error> {
+pub fn STAT(filename: &str, statbuf: &types::stat) -> Result<isize, types::error> {
     return syscall!(4, filename.as_ptr(), statbuf as *const _);
 }
 //#endregion
@@ -50,13 +51,17 @@ pub fn FSTAT(fd: usize, statbuf: &types::stat) -> Result<isize, types::error> {
 //#endregion
 
 //#region LSTAT System Call #6
-pub fn LSTAT(filename: &str, statbuf: &types::stat ) -> Result<isize, types::error> {
+pub fn LSTAT(filename: &str, statbuf: &types::stat) -> Result<isize, types::error> {
     return syscall!(6, filename.as_ptr(), statbuf as *const _);
 }
 //#endregion
 
 //#region POLL System Call #7
-pub fn POLL(ufds: &[types::poll_fd], nfds: usize, timeout_msecs: usize) -> Result<isize, types::error> {
+pub fn POLL(
+    ufds: &[types::poll_fd],
+    nfds: usize,
+    timeout_msecs: usize,
+) -> Result<isize, types::error> {
     return syscall!(7, ufds.as_ptr(), nfds, timeout_msecs);
 }
 //#endregion
@@ -68,7 +73,14 @@ pub fn LSEEK(fd: usize, offset: &types::off_t, origin: usize) -> Result<isize, t
 //#endregion
 
 //#region MMAP System Call #9
-pub fn MMAP(addr: usize, len: usize, prot: usize, flags: usize, fd: usize, off: usize) -> Result<isize, types::error> {
+pub fn MMAP(
+    addr: usize,
+    len: usize,
+    prot: usize,
+    flags: usize,
+    fd: usize,
+    off: usize,
+) -> Result<isize, types::error> {
     return syscall!(9, addr, len, prot, flags, fd, off);
 }
 //#endregion
@@ -86,8 +98,9 @@ pub fn MUNMAP(addr: usize, len: usize) -> Result<isize, types::error> {
 //#endregion
 
 //#region BRK System Call #12
-// Not sure if the end_data_segment is passed correct   
-pub fn BRK(end_data_segment: &usize) -> Result<isize, types::error>{            //<-Check on this***********
+// Not sure if the end_data_segment is passed correct
+pub fn BRK(end_data_segment: &usize) -> Result<isize, types::error> {
+    //<-Check on this***********
     return syscall!(12, end_data_segment as *const _);
 }
 //#endregion

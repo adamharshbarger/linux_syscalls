@@ -1,6 +1,5 @@
-#![crate_name="linux_syscalls"]
-#![crate_type="lib"]
-
+#![crate_name = "linux_syscalls"]
+#![crate_type = "lib"]
 #![feature(asm)]
 #![deny(warnings)]
 #![no_std]
@@ -15,8 +14,6 @@ pub(crate) mod macros;
 
 pub mod types;
 
-#[cfg(all(target_os="linux", target_arch="x86_64"))]
-#[path="platform/linux-x86_64/mod.rs"]
+#[cfg(all(target_os = "linux", target_arch = "x86_64"))]
+#[path = "platform/linux-x86_64/mod.rs"]
 pub mod platform;
-
-
